@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Espaço Calmo / Solução Senac</title>
+    <style>
+        /* Reset Geral */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        body {
+            background-color: #06070d;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            color: rgba(255, 255, 255, 0.9);
+            position: relative;
+        }
+
+        /* Fundo Gradiente */
+        .ambient-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 50%, #111625 0%, #06070d 100%);
+            z-index: 1;
+        }
+
+        /* Bloco de Conteúdo Principal */
+        .content-wrapper {
+            position: relative;
+            z-index: 3;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+            width: 100%;
+            max-width: 450px;
+            transition: opacity 0.8s ease;
+        }
+
+        /* Título Principal */
+        .main-title {
+            font-size: 1.6rem;
+            font-weight: 300;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            text-align: center;
+            color: #ffffff;
+            width: 100%;
+        }
+        
+        .main-title span {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #4facfe;
+            margin-bottom: 8px;
+            letter-spacing: 0.2em;
+        }
+
+        /* Container do Questionário */
+        .quiz-container {
+            width: 100%;
+            min-height: 320px; 
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 40px 30px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Etapas do Questionário */
+        .quiz-step {
+            position: absolute; 
+            visibility: hidden;
+            opacity: 0;
+            width: 85%;
+            text-align: center;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+        }
+
+        .quiz-step.active {
+            position: relative;
+            visibility: visible;
+            opacity: 1;
+            width: 100%;
+        }
+
+        .quiz-container h2 {
+            font-weight: 300;
+            font-size: 1.4rem;
+            margin-bottom: 30px;
+            line-height: 1.4;
+            color: #ffffff;
+        }
+
+        /* Lista de Botões */
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+            align-items: center;
+        }
+
+        /* Botões */
+        .option-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 16px 20px;
+            color: rgba(255, 255, 255, 0.85);
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.25s ease;
+            text-align: center;
+            width: 100%;
+            max-width: 360px;
+        }
+
+        .option-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: #4facfe;
+            color: #ffffff;
+            transform: translateY(-2px);
+        }
+
+        /* --- ESPAÇO DE MEDITAÇÃO --- */
+        .center-space {
+            position: absolute;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transform: scale(0.9);
+            pointer-events: none;
+            transition: opacity 1.2s ease, transform 1.2s ease;
+        }
+
+        .center-space.visible {
+            opacity: 1;
+            transform: scale(1);
+            pointer-events: auto;
+        }
+
+        .glow-circle {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.03) 0%, transparent 70%);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 4s cubic-bezier(0.4, 0, 0.2, 1), border-color 4s ease, box-shadow 4s ease;
+        }
+
+        .breath-label {
+            color: #ffffff;
+            font-size: 1.1rem;
+            font-weight: 300;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            user-select: none;
+        }
+
+        /* Rodapé */
+        .credits {
+            position: absolute;
+            bottom: 20px;
+            font-size: 0.7rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.3);
+            z-index: 4;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ambient-bg"></div>
+
+    <!-- Bloco Unificado -->
+    <div class="content-wrapper" id="contentWrapper">
+        
+        <!-- Título Principal -->
+        <h1 class="main-title">
+            <span>Solução Senac</span>
+            Para Aliviar o Estresse
+        </h1>
+
+        <!-- Container do Questionário -->
+        <div class="quiz-container" id="quizContainer">
+            
+            <!-- Pergunta 1 -->
+            <div class="quiz-step active" id="step1">
+                <h2>Como você está se sentindo hoje?</h2>
+                <div class="options-list">
+                    <button class="option-btn" onclick="nextStep(1)">Ansioso ou agitado</button>
+                    <button class="option-btn" onclick="nextStep(1)">Cansado ou exausto</button>
+                    <button class="option-btn" onclick="nextStep(1)">Buscando apenas um momento de paz</button>
+                </div>
+            </div>
+
+            <!-- Pergunta 2 -->
+            <div class="quiz-step" id="step2">
+                <h2>O que sua mente mais precisa agora?</h2>
+                <div class="options-list">
+                    <button class="option-btn" onclick="nextStep(2)">Desacelerar os pensamentos</button>
+                    <button class="option-btn" onclick="nextStep(2)">Focar no momento presente</button>
+                    <button class="option-btn" onclick="nextStep(2)">Deixar as tensões irem embora</button>
+                </div>
+            </div>
+
+            <!-- Pergunta 3 -->
+            <div class="quiz-step" id="step3">
+                <h2>Pronto para se desconectar do mundo lá fora?</h2>
+                <div class="options-list">
+                    <button class="option-btn" onclick="startCalmSpace()">Estou pronto</button>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Tela de Meditação -->
+    <div class="center-space" id="calmSpace">
+        <div class="glow-circle" id="circle">
+            <span class="breath-label" id="label">Inspirar</span>
+        </div>
+    </div>
+
+    <!-- Créditos -->
+    <div class="credits">By Victor Raizer e Alan</div>
+
+    <!-- Link de áudio confiável inserido aqui -->
+    <audio id="ambientAudio" loop src="https://play.mtamusicas.com/Musica_Relaxante_Acalmar_a_Mente_e_Relaxar/pWjmpSD-ph0"></audio>
+
+    <script>
+        const contentWrapper = document.getElementById('contentWrapper');
+        const calmSpace = document.getElementById('calmSpace');
+        const circle = document.getElementById('circle');
+        const label = document.getElementById('label');
+        const audio = document.getElementById('ambientAudio');
+
+        function nextStep(currentStepNum) {
+            const currentStep = document.getElementById(`step${currentStepNum}`);
+            const nextStep = document.getElementById(`step${currentStepNum + 1}`);
+            
+            currentStep.style.opacity = '0';
+            setTimeout(() => {
+                currentStep.classList.remove('active');
+                nextStep.classList.add('active');
+                setTimeout(() => {
+                    nextStep.style.opacity = '1';
+                }, 50);
+            }, 400);
+        }
+
+        function startCalmSpace() {
+            contentWrapper.style.opacity = '0';
+            
+            // Força a reprodução do som assim que clica em "Estou Pronto"
+            audio.play().then(() => {
+                console.log("Música tocando com sucesso!");
+            }).catch(e => {
+                console.log("Erro ao tocar áudio, verifique as permissões do seu navegador: ", e);
+            });
+
+            setTimeout(() => {
+                contentWrapper.classList.add('hidden');
+                calmSpace.classList.add('visible');
+                
+                setInterval(runBreathingCycle, 4000);
+                runBreathingCycle();
+            }, 800);
+        }
+
+        const animationStages = [
+            { text: "Inspirar", scale: 1.5, color: "rgba(79, 172, 254, 0.4)" },
+            { text: "Prender", scale: 1.5, color: "rgba(0, 242, 254, 0.3)" },
+            { text: "Expirar", scale: 0.95, color: "rgba(255, 255, 255, 0.1)" }
+        ];
+
+        let stageIndex = 0;
+
+        function runBreathingCycle() {
+            const current = animationStages[stageIndex];
+            label.textContent = current.text;
+            circle.style.transform = `scale(${current.scale})`;
+            circle.style.borderColor = current.color;
+            circle.style.boxShadow = `0 0 30px ${current.color}`;
+
+            stageIndex = (stageIndex + 1) % animationStages.length;
+        }
+    </script>
+</body>
+</html>
